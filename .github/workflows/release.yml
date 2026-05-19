@@ -24,19 +24,10 @@ jobs:
         uses: paulhatch/semantic-version@v6.0.2
         with:
           tag_prefix: "v"
-          major_pattern: "(BREAKING CHANGE|!):"
-          minor_pattern: "^feat"
-          format: "${major}.${minor}.${patch}"
-          bump_each_commit: false
-          change_log_format: "auto"
-          version_format: "${major}.${minor}.${patch}"
-          enable_output_autobump: false
-          namespace: ""
-          bump_level_override: ""
-          user_format_type: "csv"
-          debug: false
-          pre_release: false
-          enable_semantic_commits_suggestions: false
+          major_pattern: "feat!:"
+          minor_pattern: "feat:"
+          bump_each_commit: true
+          bump_each_commit_patch_pattern: "fix:"
 
   build:
     needs: version
