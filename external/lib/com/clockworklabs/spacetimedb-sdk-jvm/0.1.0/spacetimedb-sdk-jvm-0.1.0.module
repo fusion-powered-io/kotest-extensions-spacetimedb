@@ -1,0 +1,138 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../spacetimedb-sdk/0.1.0/spacetimedb-sdk-0.1.0.module",
+    "group": "com.clockworklabs",
+    "module": "spacetimedb-sdk",
+    "version": "0.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.0.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "spacetimedb-sdk-jvm-0.1.0.jar",
+          "url": "spacetimedb-sdk-jvm-0.1.0.jar",
+          "size": 260995,
+          "sha512": "045bb9e055673e275e9c83ece445bfed613aafb9dcd38f5fc9014a23619f66b5276575f18e675fa0f636f405f064075f6c06eb946f49e38cf89a3a5e81404f8d",
+          "sha256": "97442205640e1e76e2b1f6212cc56db057479ff006042d4ccc39bbb1ed2dd045",
+          "sha1": "157214a4db334f937cb3fcff42e8a95dcb4fadff",
+          "md5": "b0217f9d3e038ebb400c7e0f1c2aecec"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-okhttp"
+        },
+        {
+          "group": "org.brotli",
+          "module": "dec",
+          "version": {
+            "requires": "0.1.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-bom",
+          "version": {
+            "requires": "3.4.3"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-core"
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-websockets"
+        }
+      ],
+      "files": [
+        {
+          "name": "spacetimedb-sdk-jvm-0.1.0.jar",
+          "url": "spacetimedb-sdk-jvm-0.1.0.jar",
+          "size": 260995,
+          "sha512": "045bb9e055673e275e9c83ece445bfed613aafb9dcd38f5fc9014a23619f66b5276575f18e675fa0f636f405f064075f6c06eb946f49e38cf89a3a5e81404f8d",
+          "sha256": "97442205640e1e76e2b1f6212cc56db057479ff006042d4ccc39bbb1ed2dd045",
+          "sha1": "157214a4db334f937cb3fcff42e8a95dcb4fadff",
+          "md5": "b0217f9d3e038ebb400c7e0f1c2aecec"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "spacetimedb-sdk-jvm-0.1.0-sources.jar",
+          "url": "spacetimedb-sdk-jvm-0.1.0-sources.jar",
+          "size": 28623,
+          "sha512": "48d85dc34a98dff1ec80655304d4382352bb3278e0fbd7587184850ca9e73cd771d8093e6572c4bbe6be0735becadb80c3e9410021c34cc6bea566da29c31e7e",
+          "sha256": "0ee688a299c9b84da819143f9f8f2224277da15d86a3171486eba83cc17f06ca",
+          "sha1": "2db553075e63743d7c0b35825964000e5118559d",
+          "md5": "be37197a4079c960032af5dba3be1467"
+        }
+      ]
+    }
+  ]
+}

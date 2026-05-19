@@ -1,0 +1,18 @@
+[versions]
+kotlin = "2.3.21"
+kotest = "6.1.11"
+jjwt = "0.13.0"
+
+[libraries]
+#spacetimedb
+spacetimedb-sdk = { module = "com.clockworklabs:spacetimedb-sdk", version = "0.1.0" }
+#kotest
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+jjwt = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwtImpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwtJackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version = "2.3.2" }
+kotest = { id = "io.kotest", version.ref = "kotest" }

@@ -1,8 +1,34 @@
+# --- IDEs (IntelliJ, Android Studio, VS Code) ---
+.idea/
+.cursor/
+*.iml
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+.vscode/
+*.swp
+*.swo
+
+# --- Build & Compilation ---
+.gradle/
+.kotlin/
+build/
+target/
+.externalNativeBuild/
+.cxx/
+*.aab
+*.apk
+output-metadata.json
+
+# --- Local Configuration & Secrets ---
+local.properties
+google-services.json
+*.jks
+*.keystore
+*.identity
+
 # Compiled class file
 *.class
-
-# Log file
-*.log
 
 # BlueJ files
 *.ctxt
@@ -23,5 +49,12 @@
 hs_err_pid*
 replay_pid*
 
-# Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
-.kotlin/
+# --- Logs & Profiling ---
+*.log
+**/*.log
+*.hprof
+captures/
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
