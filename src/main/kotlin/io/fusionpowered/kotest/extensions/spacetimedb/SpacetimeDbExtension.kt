@@ -1,7 +1,6 @@
-package io.fusionpowered.seer.backend.client.extension
+package io.fusionpowered.kotest.extensions.spacetimedb
 
 import com.clockworklabs.spacetimedb.DbConnection
-import io.fusionpowered.seer.backend.client.extension.model.UserTokenData
 import io.jsonwebtoken.Jwts
 import io.kotest.core.listeners.AfterProjectListener
 import io.kotest.core.listeners.AfterTestListener
@@ -17,9 +16,10 @@ import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 class SpacetimeDbExtension(
-    val moduleName: String = "backend-server-test",
+    val moduleName: String,
+    private val modulePath: String,
     private val port: Int = ServerSocket(0).use { it.localPort },
-    private val modulePath: String = "../backendServer"
+    private val defaultIssuer: String = "https://accounts.google.com",
 ) : BeforeTestListener, AfterTestListener, AfterProjectListener {
 
     val url = "http://localhost:$port"
@@ -32,10 +32,13 @@ class SpacetimeDbExtension(
         //To be picked up by spring
         System.setProperty("spacetime.url", url)
         System.setProperty("spacetime.module", moduleName)
-        System.setProperty("spacetime.token", createTokenFor(UserTokenData("Backend User", "user@backend")))
+        System.setProperty("spacetime.token", createToken())
     }
 
-    fun createTokenFor(userTokenData: UserTokenData): String {
+    fun createToken(
+        issuer: String = defaultIssuer,
+        claims: Map<String, String> = mapOf("name" to "SpacetimeDB User", "email" to "user@spacetimedb")
+    ): String {
         val privateKey = File("${System.getProperty("user.home")}/.config/spacetime/id_ecdsa")
             .readText()
             .replace("-----BEGIN PRIVATE KEY-----", "")
@@ -44,25 +47,21 @@ class SpacetimeDbExtension(
             .let { Base64.decode(it) }
             .let { PKCS8EncodedKeySpec(it) }
             .let { KeyFactory.getInstance("EC").generatePrivate(it) }
-        return with(userTokenData) {
-            Jwts.builder()
-                .issuer("https://accounts.google.com")
-                .issuedAt(java.util.Date())
-                .expiration(java.util.Date(System.currentTimeMillis() + 3_600_000))
-                .subject(Random.nextBytes(ByteArray(64)).toHexString())
-                .claim("name", name)
-                .claim("email", email)
-                .claim("picture", picture)
-                .signWith(privateKey, Jwts.SIG.ES256)
-                .compact()
-        }
+        return Jwts.builder()
+            .issuer(issuer)
+            .issuedAt(java.util.Date())
+            .expiration(java.util.Date(System.currentTimeMillis() + 3_600_000))
+            .subject(Random.nextBytes(ByteArray(64)).toHexString())
+            .claims(claims)
+            .signWith(privateKey, Jwts.SIG.ES256)
+            .compact()
     }
 
     override suspend fun beforeTest(testCase: TestCase) {
         connection = DbConnection.builder()
             .withUri(url)
             .withModuleName(moduleName)
-            .withToken(createTokenFor(UserTokenData()))
+            .withToken(createToken())
             .also {
                 cli("start")
                 cli("publish", moduleName, "--module-path", modulePath, "-s", url, "-c", "--yes")
