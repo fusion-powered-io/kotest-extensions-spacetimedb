@@ -1,18 +1,14 @@
 package io.fusionpowered.kotest.extensions.spacetimedb
 
 import com.clockworklabs.spacetimedb.DbConnection
-import io.jsonwebtoken.Jwts
 import io.kotest.core.listeners.AfterProjectListener
 import io.kotest.core.listeners.AfterTestListener
 import io.kotest.core.listeners.BeforeTestListener
 import io.kotest.core.test.TestCase
 import io.kotest.engine.test.TestResult
-import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.ServerSocket
-import java.security.KeyFactory
-import java.security.spec.PKCS8EncodedKeySpec
-import kotlin.io.encoding.Base64
-import kotlin.random.Random
 import kotlin.uuid.Uuid
 
 /**
@@ -28,16 +24,15 @@ import kotlin.uuid.Uuid
  *
  * @property moduleName The name of the SpacetimeDB database module to publish and interact with.
  * @property modulePath The system path (relative or absolute) to the module directory (e.g. containing Cargo.toml).
- * @property defaultIssuer The default token issuer used when generating JWT authentication tokens.
- * @property defaultClaims The default JWT claims map containing user profile information.
  * @property port The local port number the SpacetimeDB server should listen on. Defaults to a randomly allocated free port.
+ * @property extensionToken The token used for the extension to connect to the module
+ *
  */
 class SpacetimeDbExtension(
     val moduleName: String,
     private val modulePath: String,
-    private val defaultIssuer: String,
-    private val defaultClaims: Map<String, String> = mapOf("name" to "SpacetimeDB User", "email" to "user@spacetimedb"),
     val port: Int = ServerSocket(0).use { it.localPort },
+    private val extensionToken: String? = null,
 ) : BeforeTestListener, AfterTestListener, AfterProjectListener {
 
     /**
@@ -51,43 +46,14 @@ class SpacetimeDbExtension(
      */
     lateinit var connection: DbConnection
 
-    private lateinit var process: Process
+    private lateinit var instanceProcess: Process
 
     init {
         cli("start")
         // Expose database connection details as system properties so frameworks (e.g. Spring) can pick them up
         System.setProperty("spacetime.url", url)
         System.setProperty("spacetime.module", moduleName)
-        System.setProperty("spacetime.token", createToken())
-    }
-
-    /**
-     * Generates a signed ES256 JWT auth token using the ECDSA private key located at `~/.config/spacetime/id_ecdsa`.
-     *
-     * @param issuer The JWT token issuer name. Defaults to [defaultIssuer].
-     * @param claims A map of claims to include in the token payload. Defaults to [defaultClaims].
-     * @return The compact, signed JWT token string.
-     */
-    fun createToken(
-        issuer: String = defaultIssuer,
-        claims: Map<String, String> = defaultClaims
-    ): String {
-        val privateKey = File("${System.getProperty("user.home")}/.config/spacetime/id_ecdsa")
-            .readText()
-            .replace("-----BEGIN PRIVATE KEY-----", "")
-            .replace("-----END PRIVATE KEY-----", "")
-            .replace("\\s".toRegex(), "")
-            .let { Base64.decode(it) }
-            .let { PKCS8EncodedKeySpec(it) }
-            .let { KeyFactory.getInstance("EC").generatePrivate(it) }
-        return Jwts.builder()
-            .issuer(issuer)
-            .issuedAt(java.util.Date())
-            .expiration(java.util.Date(System.currentTimeMillis() + 3_600_000))
-            .subject(Random.nextBytes(ByteArray(64)).toHexString())
-            .claims(claims)
-            .signWith(privateKey, Jwts.SIG.ES256)
-            .compact()
+        extensionToken?.let {  System.setProperty("spacetime.token", it) }
     }
 
     /**
@@ -98,7 +64,7 @@ class SpacetimeDbExtension(
         connection = DbConnection.builder()
             .withUri(url)
             .withModuleName(moduleName)
-            .withToken(createToken())
+            .withToken(extensionToken)
             .build()
     }
 
@@ -129,7 +95,7 @@ class SpacetimeDbExtension(
     fun cli(vararg args: String) {
         when (args.first()) {
             "start" -> {
-                process = execute(
+                instanceProcess = execute(
                     "spacetime", "start", "--in-memory", "--non-interactive",
                     "--listen-addr", "0.0.0.0:$port",
                     "--data-dir", "build/tmp/spacetime/${Uuid.random()}"
@@ -145,12 +111,13 @@ class SpacetimeDbExtension(
                         throw IllegalStateException("SpacetimeDB server failed to start within 10 seconds")
                     }
                 } while (execute("spacetime", "server", "ping", url).waitFor() != 0)
+                println("SpacetimeDB is up at $url")
             }
 
             "stop" -> {
-                if (::process.isInitialized) {
-                    process.descendants().forEach { it.destroyForcibly() }
-                    process.destroyForcibly().waitFor()
+                if (::instanceProcess.isInitialized) {
+                    instanceProcess.descendants().forEach { it.destroyForcibly() }
+                    instanceProcess.destroyForcibly().waitFor()
                 }
             }
 

@@ -11,7 +11,6 @@ object ProjectConfig : AbstractProjectConfig() {
     val spacetimeDbExtension = SpacetimeDbExtension(
         moduleName = "test-module",
         modulePath = "src/test/resources/test_module",
-        defaultIssuer = "test-issuer"
     )
 
     override val extensions = listOf(spacetimeDbExtension)

@@ -1,4 +1,4 @@
-use spacetimedb::{table, reducer, ReducerContext, Table};
+use spacetimedb::{table, reducer, ReducerContext, Table, log};
 
 #[table(accessor = person, public)]
 pub struct Person {
@@ -9,5 +9,6 @@ pub struct Person {
 
 #[reducer]
 pub fn add_person(ctx: &ReducerContext, name: String, age: u32) {
-    ctx.db.person().insert(Person { name, age });
+    let person = ctx.db.person().insert(Person { name, age });
+    log::info!("Person with name {} and age {} inserted", person.name, person.age)
 }

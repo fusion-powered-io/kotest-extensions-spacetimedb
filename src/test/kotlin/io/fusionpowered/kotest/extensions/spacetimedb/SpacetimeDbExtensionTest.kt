@@ -3,9 +3,9 @@ package io.fusionpowered.kotest.extensions.spacetimedb
 import com.clockworklabs.spacetimedb.bsatn.BsatnReader
 import com.clockworklabs.spacetimedb.bsatn.BsatnWriter
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldNotBeEmpty
 import io.kotest.matchers.string.shouldStartWith
 import io.kotest.provided.ProjectConfig.spacetimeDbExtension
 
@@ -24,18 +24,7 @@ class SpacetimeDbExtensionTest : StringSpec({
 
         System.getProperty("spacetime.url") shouldBe spacetimeDbExtension.url
         System.getProperty("spacetime.module") shouldBe "test-module"
-        System.getProperty("spacetime.token").shouldNotBeNull().shouldNotBeEmpty()
-    }
-
-    "should generate valid signed token with default claims" {
-        // Given
-        // The globally active SpacetimeDbExtension
-
-        // When
-        val token = spacetimeDbExtension.createToken()
-
-        // Then
-        token.split(".").size shouldBe 3
+        System.getProperty("spacetime.token").shouldBeNull()
     }
 
     "should generate valid signed token with custom claims" {
@@ -47,7 +36,7 @@ class SpacetimeDbExtensionTest : StringSpec({
         )
 
         // When
-        val token = spacetimeDbExtension.createToken(
+        val token = TokenCreator.createToken(
             issuer = "custom-issuer",
             claims = customClaims
         )
@@ -64,7 +53,6 @@ class SpacetimeDbExtensionTest : StringSpec({
         val customExt = SpacetimeDbExtension(
             moduleName = "another-module",
             modulePath = "src/test/resources/test_module",
-            defaultIssuer = "custom-issuer",
             port = customPort
         )
 
